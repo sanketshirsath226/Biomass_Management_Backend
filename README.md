@@ -94,7 +94,7 @@ Follow these steps to clone the repository and set up the project:
     # Cookie expiration time in milliseconds
     COOKIE_EXPIRE=
     ```
-3.  Duplicate the `config.example.env` file and rename it to `config.env`. Update the values for each parameter according to your configuration.
+3.  Duplicate the `config.example.env` file and rename it to `.env`. Update the values for each parameter according to your configuration.
 ### Running the Application
 1. Start the server:
     ```bash
