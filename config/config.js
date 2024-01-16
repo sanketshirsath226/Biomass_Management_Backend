@@ -1,2 +1,4 @@
 // config.js
-export const allowedRoles = ['depot', 'harvestor', 'refinery'];
+module.exports = {
+    allowedRoles: ['depot', 'harvestor', 'refinery'],
+};

@@ -1,12 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
+const authMiddleware = require('../middleware/authMiddleware')
 
-router.post('/register', userController.register);
-router.post('/login', userController.login);
-router.get('/profile', userController.getProfile);
-router.put('/profile', userController.updateProfile);
-router.post('/forgot-password', userController.forgotPassword);
-router.post('/reset-password/:token', userController.resetPassword);
+router.post('/register', userController.register); // No middleware needed
+router.post('/login', userController.login); // No middleware needed
 
-export default router;
+router.get('/profile', authMiddleware, userController.getProfile);
+router.put('/profile', authMiddleware, userController.updateProfile);
+router.post('/forgot-password', userController.forgotPassword); // No middleware needed
+router.post('/reset-password/:token', userController.resetPassword); // No middleware needed
+
+module.exports = router

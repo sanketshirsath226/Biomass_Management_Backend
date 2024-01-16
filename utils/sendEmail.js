@@ -84,4 +84,4 @@ const htmlTemplate = (text) => {
   `;
 };
 
-export default sendEmail;
+module.exports = sendEmail
