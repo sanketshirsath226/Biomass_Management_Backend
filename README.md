@@ -26,8 +26,6 @@ This README provides essential information about setting up and configuring the 
 
 ### Team Leader: Pranav Shimpi
 - **Role:** Visionary Leader, UI/UX Designer, Software Engineer
-<!-- - **Image:**
-  ![Pranav Shimpi](https://example.com/pranav-shimpi-image.jpg) \ -->
 - **Social Media:**
 
   ![Linkedin][linkedin-shield]
@@ -36,8 +34,6 @@ Pranav is our visionary leader, driving the team with passion and expertise in R
 
 ### Team Member: Vaidehi Patil
 - **Role:** UI/UX Designer, Software Engineer
-<!-- - **Image:**
-  ![Vaidehi Patil](https://example.com/vaidehi-patil-image.jpg) \ -->
 - **Social Media:**
 
   ![Linkedin][linkedin-shield]
@@ -47,8 +43,6 @@ Vaidehi is a creative force on our team, specializing in designing intuitive and
 
 ### Team Member: Sayali Kulkarni
 - **Role:** UI/UX Designer, Software Engineer
-<!-- - **Image:**
-  ![Sayali Kulkarni](https://example.com/sayali-kulkarni-image.jpg) \ -->
 - **Social Media:**
 
   ![Linkedin][linkedin-shield]
@@ -57,8 +51,6 @@ Sayali is our coding maestro, bringing a wealth of technical expertise to the pr
 
 ### Team Member: Sanket Shirsath
 - **Role:** Developer
-<!-- - **Image:**
-  ![Sanket Shirsath](https://example.com/sanket-shirsath-image.jpg) \ -->
 - **Social Media:**
 
   ![Linkedin][linkedin-shield]
@@ -81,26 +73,26 @@ Follow these steps to clone the repository and set up the project:
 1. Create a `config` directory in the root of the project.
 2. Inside the `config` directory, create a file named `config.example.env` with the following parameters:
     ```bash 
-        # config.example.env
-        
-        # Gmail credentials for sending emails
-        GMAIL_ID=
-        GMAIL_PASS=
-        
-        # Port on which the server will run
-        PORT=
-        
-        # MongoDB connection URI
-        MONGO_URI=
-        
-        # JWT secret key for token generation and verification
-        JWT_SECRET=
-        
-        # JWT expiration time in seconds
-        JWT_EXPIRE=
-        
-        # Cookie expiration time in milliseconds
-        COOKIE_EXPIRE=
+    # config.example.env
+    
+    # Gmail credentials for sending emails
+    GMAIL_ID=
+    GMAIL_PASS=
+    
+    # Port on which the server will run
+    PORT=
+    
+    # MongoDB connection URI
+    MONGO_URI=
+    
+    # JWT secret key for token generation and verification
+    JWT_SECRET=
+    
+    # JWT expiration time in seconds
+    JWT_EXPIRE=
+    
+    # Cookie expiration time in milliseconds
+    COOKIE_EXPIRE=
     ```
 3.  Duplicate the `config.example.env` file and rename it to `config.env`. Update the values for each parameter according to your configuration.
 ### Running the Application
