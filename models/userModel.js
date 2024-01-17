@@ -14,12 +14,12 @@ const userSchema = new mongoose.Schema({
     unique: true,
     lowercase: true,
     trim: true,
-    validate(value) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(value)) {
-        throw new Error('Invalid email address');
-      }
-    },
+    // validate(value) {
+    //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    //   if (!emailRegex.test(value)) {
+    //     throw new Error('Invalid email address');
+    //   }
+    // },
   },
   password: {
     type: String,
@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['depot', 'harvestor', 'refinery'],
+    enum: ['depot', 'harvester', 'refinery'],
     required: true, // Assuming all users must have a role
   },
   isVerified : {
