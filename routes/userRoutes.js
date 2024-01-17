@@ -10,5 +10,6 @@ router.get('/profile', authMiddleware, userController.getProfile);
 router.put('/profile', authMiddleware, userController.updateProfile);
 router.post('/forgot-password', userController.forgotPassword); // No middleware needed
 router.post('/reset-password/:token', userController.resetPassword); // No middleware needed
+router.put('/verify-user/:token', userController.verifyUser); // No middleware needed
 
 module.exports = router

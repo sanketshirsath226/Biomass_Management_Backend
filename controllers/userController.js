@@ -1,8 +1,6 @@
 const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
-const config = require('../config/config');
 const { getCurrentDate } = require('../utils/dateUtils');
-const crypto = require('crypto'); // For token generation
 
 // Function for sending email (assuming a separate utility)
 const sendEmail = require('../utils/sendEmail');
@@ -46,9 +44,9 @@ exports.register = async (req, res) => {
             return res.status(400).json({ message: 'Email already exists' });
         }
         const user = new User({ name, email, password, role });
-        await user.save();
 
         const verificationToken = user.generateToken();
+        await user.save();
 
         /* Date Format for Email*/
         const formattedDate = getCurrentDate()
@@ -58,9 +56,9 @@ exports.register = async (req, res) => {
             name,
             date : formattedDate,
             text : 'Verification Email',
-            link : `${req.protocol}://${req.get('host')}/verify-email/${verificationToken}`,
+            link : `${req.protocol}://${req.get('host')}/api/v1/users/verify-user/${verificationToken}`,
         });
-
+        console.log(user)
         res.status(201).json({ message: 'User registered successfully. Please check your email for verification.'});
     } catch (err) {
         console.error(err);
@@ -108,6 +106,8 @@ exports.login = async (req, res) => {
         if(!user.isVerified){
             const formattedDate = getCurrentDate()
             const verificationToken = user.generateToken();
+            await user.save();
+
             /* Sending Email*/
             const {email,name} = user
             await sendEmail({
@@ -115,9 +115,8 @@ exports.login = async (req, res) => {
                 name,
                 date : formattedDate,
                 text : 'Verification Email',
-                link : `${req.protocol}://${req.get('host')}/verify-email/${verificationToken}`,
+                link : `${req.protocol}://${req.get('host')}/api/v1/users/verify-user/${verificationToken}`,
             });
-
             return res.status(402).json({ message: 'User not verified. Please check your email for verification.'});
         }
         const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
@@ -257,3 +256,20 @@ exports.resetPassword = async (req, res) => {
         res.status(500).json({ message: 'Error resetting password' });
     }
 };
+exports.verifyUser = async (req,res) =>{
+    try {
+        const { token } = req.params;
+        const user = await User.findOne({ resetToken: token, resetTokenExpires: { $gt: Date.now() } });
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid or expired token' });
+        }
+        user.isVerified = true;
+        user.resetToken = undefined;
+        user.resetTokenExpires = undefined;
+        await user.save();
+        res.status(201).json({ message: 'User Verified Successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error verifying user' });
+    }
+}
