@@ -210,6 +210,7 @@ exports.updateProfile = async (req, res) => {
         res.status(500).json({ message: 'Server Error' });
     }
 };
+
 exports.forgotPassword = async (req, res) => {
     try {
         const { email } = req.body;
@@ -256,6 +257,24 @@ exports.resetPassword = async (req, res) => {
         res.status(500).json({ message: 'Error resetting password' });
     }
 };
+
+/*
+    The verifyUser function is used to verify user
+    with token parameter in json format
+    api : /api/v1/user/verify-user
+    method : put
+    param : token
+
+    e.g:
+    PUT /api/v1/users/verify-user/c56f9c8364beb53b8484b4461a48489546ca2274 HTTP/1.1
+    Host: localhost:4000
+
+    Status:
+        400 : { message: 'Invalid or expired token' }
+        201 : { message: 'User Verified Successfully'}
+        500 : { message: 'Server Error' }
+*/
+
 exports.verifyUser = async (req,res) =>{
     try {
         const { token } = req.params;
@@ -267,9 +286,10 @@ exports.verifyUser = async (req,res) =>{
         user.resetToken = undefined;
         user.resetTokenExpires = undefined;
         await user.save();
+
         res.status(201).json({ message: 'User Verified Successfully' });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'Error verifying user' });
+        res.status(500).json({ message: 'Server Error' });
     }
 }
