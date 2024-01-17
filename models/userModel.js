@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -30,6 +31,11 @@ const userSchema = new mongoose.Schema({
     enum: ['depot', 'harvestor', 'refinery'],
     required: true, // Assuming all users must have a role
   },
+  isVerified : {
+    default : false,
+    require : true,
+    type : Boolean
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -59,7 +65,7 @@ userSchema.methods.comparePassword = async function (enteredPassword) {
 userSchema.methods.generateToken = function () {
     const token = crypto.randomBytes(20).toString('hex');
     this.resetToken = token;
-    this.resetTokenExpires = Date.now() + 3600000; // 1 hour
+    this.resetTokenExpires = Date.now() + 5 * 60 * 1000; // 5 min
     return token;
   };
 

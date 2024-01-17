@@ -1,4 +1,5 @@
 // middleware/authMiddleware.js
+const {verify} = require("jsonwebtoken");
 
 /*
     The authMiddleware function is used to verify the token used for
@@ -13,7 +14,6 @@
 
 */
 
-const {verify} = require("jsonwebtoken");
 const authMiddleware = (req, res, next) => {
     try {
         const token = req.header("x-auth-token");

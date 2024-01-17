@@ -1,6 +1,7 @@
 const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 const config = require('../config/config');
+const { getCurrentDate } = require('../utils/dateUtils');
 const crypto = require('crypto'); // For token generation
 
 // Function for sending email (assuming a separate utility)
@@ -29,7 +30,7 @@ const sendEmail = require('../utils/sendEmail');
 
     Status:
         400 : { message: 'Email already exists' }
-        201 : { message: 'User registered successfully', token }
+        201 : { message: 'User registered successfully. Please check your email for verification.'}
         500 : { message: 'Server Error' }
 */
 
@@ -45,11 +46,22 @@ exports.register = async (req, res) => {
             return res.status(400).json({ message: 'Email already exists' });
         }
         const user = new User({ name, email, password, role });
-        console.log(user)
         await user.save();
 
-        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        res.status(201).json({ message: 'User registered successfully', token });
+        const verificationToken = user.generateToken();
+
+        /* Date Format for Email*/
+        const formattedDate = getCurrentDate()
+        /*Sending Email*/
+        await sendEmail({
+            email,
+            name,
+            date : formattedDate,
+            text : 'Verification Email',
+            link : `${req.protocol}://${req.get('host')}/verify-email/${verificationToken}`,
+        });
+
+        res.status(201).json({ message: 'User registered successfully. Please check your email for verification.'});
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Server Error' });
@@ -75,6 +87,7 @@ exports.register = async (req, res) => {
 
     Status:
         401 : { message: 'Invalid email or password' }
+        402 : { message : 'User not Verified'}
         201 : { message: 'User logged in successfully', token }
         500 : { message: 'Server Error' }
 */
@@ -92,7 +105,21 @@ exports.login = async (req, res) => {
         if (!isMatch) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
+        if(!user.isVerified){
+            const formattedDate = getCurrentDate()
+            const verificationToken = user.generateToken();
+            /* Sending Email*/
+            const {email,name} = user
+            await sendEmail({
+                email,
+                name,
+                date : formattedDate,
+                text : 'Verification Email',
+                link : `${req.protocol}://${req.get('host')}/verify-email/${verificationToken}`,
+            });
 
+            return res.status(402).json({ message: 'User not verified. Please check your email for verification.'});
+        }
         const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
         res.status(201).json({ message: 'User logged in successfully', token });
     } catch (err) {
