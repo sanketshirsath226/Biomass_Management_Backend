@@ -4,6 +4,9 @@ const { getCurrentDate } = require('../utils/dateUtils');
 
 // Function for sending email (assuming a separate utility)
 const sendEmail = require('../utils/sendEmail');
+const sendOtp = require("../utils/sendOtp");
+const {verify} = require("jsonwebtoken");
+const sendVerify = require("../utils/sendVerify");
 
 /*
     The register function is used to create/register user
@@ -64,7 +67,9 @@ exports.register = async (req, res) => {
             text : 'Verification Email',
             link : `${req.protocol}://${req.get('host')}/api/v1/users/verify-user/${verificationToken}`,
         });
-        res.status(201).json({ message: 'User registered successfully. Please check your email for verification.'});
+
+        await sendOtp('+91',mobile);
+        res.status(201).json({ message: 'User registered successfully. Please check your email or phone no for verification.'});
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Server Error' });
@@ -124,12 +129,14 @@ exports.login = async (req, res) => {
             return res.status(402).json({ message: 'User not verified. Please check your email for verification.'});
         }
         const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        res.status(201).json({ message: 'User logged in successfully', token, user : {
+        res.status(201).json({ message: 'User logged in successfully', user : {
             _id : user._id,
             name : user.name,
             email : user.email,
             role : user.role,
-            } });
+            isVerified : user.isVerified,
+
+            },token });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Server Error' });
@@ -165,7 +172,7 @@ exports.getProfile = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        res.status(201).json(user);
+        res.status(201).json({user});
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Server Error' });
@@ -204,16 +211,24 @@ exports.getProfile = async (req, res) => {
 */
 exports.updateProfile = async (req, res) => {
     try {
-        const { name, email, role } = req.body;
-
+        const { name, role, location } = req.body;
+        console.log(req)
         // Validate user input (e.g., check for empty fields, valid role)
 
-        const user = await User.findByIdAndUpdate(req.user.userId, { name, email, role }, { new: true });
+        const user = await User.findByIdAndUpdate(req.user.userId );
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        res.status(201).json(user);
+
+        await User.findByIdAndUpdate(req.user.userId, { name, role,location }, {
+            new: true,
+            runValidators: true,
+            useFindAndModify: true,
+        });
+
+
+        res.status(201).json({user});
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Server Error' });
@@ -299,6 +314,47 @@ exports.verifyUser = async (req,res) =>{
         res.status(201).json({ message: 'User Verified Successfully' });
     } catch (err) {
         console.error(err);
+        res.status(500).json({ message: 'Server Error' });
+    }
+}
+
+/*
+TODO DYNAMICALLY GET THE COUNTRY CODE
+*/
+
+exports.verifyUserByOTP = async (req,res) =>{
+    try{
+        const {email, otp} = req.body;
+        console.log(otp)
+        const user = await User.findOne({email});
+        console.log(user)
+        if(user) {
+            const {status, message} = await sendVerify(
+                "+91", user.mobile, otp
+            )
+            if (status) {
+                user.isVerified = true;
+                user.resetToken = undefined;
+                user.resetTokenExpires = undefined;
+                await user.save();
+                const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+                res.status(201).json({
+                    message: 'User Verified Successfully',user : {
+                        _id : user._id,
+                        name : user.name,
+                        email : user.email,
+                        role : user.role,
+                        isVerified : user.isVerified,
+
+                    },token},);
+            } else {
+                return res.status(400).json({message: 'Invalid or expired token'});
+            }
+        }else{
+            res.status(500).json({ message: 'Server Error' });
+        }
+    } catch (e){
+        console.error(e);
         res.status(500).json({ message: 'Server Error' });
     }
 }
