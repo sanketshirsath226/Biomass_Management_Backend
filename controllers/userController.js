@@ -34,17 +34,24 @@ const sendEmail = require('../utils/sendEmail');
 
 exports.register = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, mobile, password } = req.body;
 
         // Validate user input (e.g., check for empty fields, valid role)
         console.log(req.body);
-        const existingUser = await User.findOne({ email });
+        let existingUser = await User.findOne({ email });
+
         if (existingUser) {
             return res.status(400).json({ message: 'Email already exists' });
         }
-        const user = new User({ email, password });
+
+        existingUser = await User.findOne({ mobile });
+        if (existingUser) {
+            return res.status(400).json({ message: 'Mobile already exists' });
+        }
+        const user = new User({ email,mobile, password });
 
         const verificationToken = user.generateToken();
+
         await user.save();
 
         /* Date Format for Email*/
