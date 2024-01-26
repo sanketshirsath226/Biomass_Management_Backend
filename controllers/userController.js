@@ -34,16 +34,15 @@ const sendEmail = require('../utils/sendEmail');
 
 exports.register = async (req, res) => {
     try {
-        const { name, email, password, role } = req.body;
+        const { email, password } = req.body;
 
         // Validate user input (e.g., check for empty fields, valid role)
-
+        console.log(req.body);
         const existingUser = await User.findOne({ email });
-        console.log(existingUser)
         if (existingUser) {
             return res.status(400).json({ message: 'Email already exists' });
         }
-        const user = new User({ name, email, password, role });
+        const user = new User({ email, password });
 
         const verificationToken = user.generateToken();
         await user.save();
@@ -53,12 +52,11 @@ exports.register = async (req, res) => {
         /*Sending Email*/
         await sendEmail({
             email,
-            name,
+            name:'ABC',
             date : formattedDate,
             text : 'Verification Email',
             link : `${req.protocol}://${req.get('host')}/api/v1/users/verify-user/${verificationToken}`,
         });
-        console.log(user)
         res.status(201).json({ message: 'User registered successfully. Please check your email for verification.'});
     } catch (err) {
         console.error(err);
@@ -92,16 +90,15 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
-
         const user = await User.findOne({ email });
         if (!user) {
             return res.status(401).json({
-                message: 'Invalid email or password' });
+                message: 'Invalid email' });
         }
-
+        console.log(user)
         const isMatch = await user.comparePassword(password);
         if (!isMatch) {
-            return res.status(401).json({ message: 'Invalid email or password' });
+            return res.status(401).json({ message: 'Invalid password' });
         }
         if(!user.isVerified){
             const formattedDate = getCurrentDate()
@@ -120,7 +117,12 @@ exports.login = async (req, res) => {
             return res.status(402).json({ message: 'User not verified. Please check your email for verification.'});
         }
         const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        res.status(201).json({ message: 'User logged in successfully', token });
+        res.status(201).json({ message: 'User logged in successfully', token, user : {
+            _id : user._id,
+            name : user.name,
+            email : user.email,
+            role : user.role,
+            } });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Server Error' });

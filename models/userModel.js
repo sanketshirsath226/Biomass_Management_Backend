@@ -5,7 +5,7 @@ const crypto = require('crypto');
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
+    required: false,
     trim: true,
   },
   email: {
@@ -29,9 +29,9 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     enum: ['depot', 'harvester', 'refinery'],
-    required: true, // Assuming all users must have a role
+    required: false, // Assuming all users must have a role
   },
-  isVerified : {
+    isVerified : {
     default : false,
     require : true,
     type : Boolean
