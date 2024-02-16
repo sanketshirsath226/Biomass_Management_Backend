@@ -6,6 +6,8 @@ const config = require('./config/config');
 const errorHandler = require('./middleware/errorHandler');
 require('dotenv').config()
 const userRoutes = require('./routes/userRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
+
 const connectDatabase = require("./config/database"); // Assuming your routes are in a separate file
 
 const app = express();
@@ -23,6 +25,7 @@ app.use('/api/v1/users', userRoutes); // Example route
 app.get('/', (req, res) => {
     res.send('Server is running!');
 });
+app.use('/api/v1/prediction', dashboardRoutes); // Example route
 
 // Start server
 const port = process.env.PORT || 5000;
