@@ -3,7 +3,7 @@ const axios = require('axios');
 
 exports.getPredictionValues = async (req, res) => {
     try {
-        
+
         const response = await axios.get('http://127.0.0.1:5000/prediction://prediction-api.com/predictions');
         const predictionValues = response.data;
         res.status(200).json(predictionValues);
@@ -14,3 +14,4 @@ exports.getPredictionValues = async (req, res) => {
       res.status(500).json({ error: 'Internal server error' });
     }
   };
+  
