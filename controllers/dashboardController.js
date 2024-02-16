@@ -1,4 +1,4 @@
-const Dashboard = require('../models/dashboardModel');
+// const Dashboard = require('../models/dashboardModel');
 const axios = require('axios');
 
 exports.getPredictionValues = async (req, res) => {
