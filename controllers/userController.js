@@ -23,10 +23,10 @@ const sendVerify = require("../utils/sendVerify");
     Content-Type: application/json
     Content-Length: 131
     {
-        "name" :  "sample",
         "email" : "sanketshirsath226@gmail.com",
         "password" : "Sanket@91724",
-        "role" : "depot"
+        "role" : "depot",
+         "mobile" : "9172464988"
     }
 
     Status:
@@ -47,7 +47,7 @@ exports.register = async (req, res) => {
             return res.status(400).json({ message: 'Email already exists' });
         }
 
-        existingUser = await User.findOne({ mobile });
+        existingUser = await User.frindOne({ mobile });
         if (existingUser) {
             return res.status(400).json({ message: 'Mobile already exists' });
         }
@@ -118,7 +118,8 @@ exports.login = async (req, res) => {
             await user.save();
 
             /* Sending Email*/
-            const {email,name} = user
+            const {email,name,mobile} = user
+            await sendOtp('+91',mobile);
             await sendEmail({
                 email,
                 name,
@@ -126,7 +127,7 @@ exports.login = async (req, res) => {
                 text : 'Verification Email',
                 link : `${req.protocol}://${req.get('host')}/api/v1/users/verify-user/${verificationToken}`,
             });
-            return res.status(402).json({ message: 'User not verified. Please check your email for verification.'});
+            return res.status(402).json({ message: 'User not verified. Please check your phone or  email for verification.'});
         }
         const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
         res.status(201).json({ message: 'User logged in successfully', user : {
@@ -135,7 +136,6 @@ exports.login = async (req, res) => {
             email : user.email,
             role : user.role,
             isVerified : user.isVerified,
-
             },token });
     } catch (err) {
         console.error(err);
@@ -172,7 +172,9 @@ exports.getProfile = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        res.status(201).json({user});
+        res.status(201).json({
+            user : user
+        });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Server Error' });

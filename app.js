@@ -7,6 +7,7 @@ const errorHandler = require('./middleware/errorHandler');
 require('dotenv').config()
 const userRoutes = require('./routes/userRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
+const depotsRoutes = require('./routes/depotRoutes');
 
 const connectDatabase = require("./config/database"); // Assuming your routes are in a separate file
 
@@ -22,6 +23,7 @@ app.use(cors());
 
 // Routes
 app.use('/api/v1/users', userRoutes); // Example route
+app.use('/api/v1/depots',depotsRoutes)
 app.get('/', (req, res) => {
     res.send('Server is running!');
 });
