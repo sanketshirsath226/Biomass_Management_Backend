@@ -37,6 +37,19 @@ const userSchema = new mongoose.Schema({
     enum: ['depot', 'harvester', 'refinery'],
     required: false, // Assuming all users must have a role
   },
+  location : {
+    type : {
+      longitude : {
+        type : String,
+        required : false
+      },
+      latitude : {
+        type : String,
+        required : false
+      }
+    },
+    required : false
+  },
     isVerified : {
     default : false,
     require : true,

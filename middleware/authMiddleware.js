@@ -17,9 +17,11 @@ const {verify} = require("jsonwebtoken");
 const authMiddleware = (req, res, next) => {
     try {
         const token = req.header("x-auth-token");
+        console.log(token)
         if (!token) return res.status(403).json({ message: 'Unauthorized'});
         const decoded = verify(token, process.env.JWT_SECRET);
         req.user = decoded;
+        console.log(decoded)
         next();
     } catch (error) {
         return res.status(401).json({ message: 'Invalid Token' });
