@@ -47,7 +47,7 @@ exports.register = async (req, res) => {
             return res.status(400).json({ message: 'Email already exists' });
         }
 
-        existingUser = await User.frindOne({ mobile });
+        existingUser = await User.findOne({ mobile });
         if (existingUser) {
             return res.status(400).json({ message: 'Mobile already exists' });
         }
@@ -134,7 +134,9 @@ exports.login = async (req, res) => {
             _id : user._id,
             name : user.name,
             email : user.email,
+            mobile : user.mobile,
             role : user.role,
+            location : user.location,
             isVerified : user.isVerified,
             },token });
     } catch (err) {
