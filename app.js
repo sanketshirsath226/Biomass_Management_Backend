@@ -8,7 +8,7 @@ require('dotenv').config()
 const userRoutes = require('./routes/userRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const depotsRoutes = require('./routes/depotRoutes');
-
+const refineryRoutes = require('./routes/refineryRoutes')
 const connectDatabase = require("./config/database"); // Assuming your routes are in a separate file
 
 const app = express();
@@ -24,6 +24,7 @@ app.use(cors());
 // Routes
 app.use('/api/v1/users', userRoutes); // Example route
 app.use('/api/v1/depots',depotsRoutes)
+app.use('/api/v1/refinery',refineryRoutes)
 app.get('/', (req, res) => {
     res.send('Server is running!');
 });
